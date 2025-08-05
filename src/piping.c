@@ -38,7 +38,7 @@ void	ft_execute_pipeline(t_dat *d, char ***cmd)
 
 int	ft_create_pipes(int **fd, int tot)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < tot - 1)
@@ -54,4 +54,17 @@ int	ft_create_pipes(int **fd, int tot)
 		i++;
 	}
 	return (1);
+}
+
+void	ft_close_pipes(int **fd, int tot)
+{
+	int	i;
+
+	i = 0;
+	while (i < tot - 1)
+	{
+		close(fd[i][0]);
+		close(fd[i][1]);
+		i++;
+	}
 }

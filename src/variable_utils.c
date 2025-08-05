@@ -69,3 +69,21 @@ int	ft_update_existing_var(t_va *node, const char *name, const char *val)
 	}
 	return (0);
 }
+
+int	ft_var_name_only(char *str)
+{
+	size_t i;
+
+	if (!str)
+		return (0);
+	if (!ft_isalpha(str[0]) && str[0] != '_')
+		return (0);
+	i = 1;
+	while (str[i])
+	{
+		if (!ft_isalnum(str[i]) && str[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
+}
