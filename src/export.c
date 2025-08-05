@@ -84,3 +84,39 @@ void	ft_print_export(t_va *head)
 		cur = cur->next;
 	}
 }
+
+void	ft_export_error(char *arg, char *message)
+{
+	write(2, "export: '", 9);
+	write(2, arg, ft_strlen(arg));
+	write(2, "': ", 3);
+	write(2, message, ft_strlen(message));
+	write(2, "\n", 1);
+}
+
+void	ft_export_multi_var(t_dat *data, size_t k)
+{
+	char	*message;
+	int		i;
+
+	message = "not a valid identifier";
+	if (data->xln[k + 1] == NULL)
+	{
+		ft_print_sorted_env(data->ev);
+		return ;
+	}
+	i = 1;
+	while (data->xln[k + i] != NULL)
+	{
+		if (ft_valid_var(data->xln[k + i]) == 1)
+		{
+			ft_export_type1(&data->ev, data->xln[k + i], NULL, NULL);
+			ft_add_local_var(data, data->xln[k + i]);
+		}
+		else if (ft_var_name_only(data->xln[k + i]) == 1)
+			ft_export_type2(data, data->xln[k + i]);
+		else
+			ft_export_error(data->xln[k + i], message);
+		i++;
+	}
+}

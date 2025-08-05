@@ -68,3 +68,37 @@ void	ft_sort_list_by_name(t_va **head_ref)
 	ft_sort_list_by_name(&b);
 	*head_ref = ft_merge_sorted_lists(a, b);
 }
+
+t_va	*ft_duplicate_list(const t_va *head)
+{
+	const t_va	*cur;
+	t_va		*new_head;
+	t_va		*new_tail;
+
+	cur = head;
+	new_head = NULL;
+	new_tail = NULL;
+	while (cur != NULL)
+	{
+		if (!ft_append_dup_node(cur, &new_head, &new_tail))
+			return (NULL);
+		cur = cur->next;
+	}
+	return (new_head);
+}
+
+int	ft_count_list(t_va *head)
+{
+	t_va	*cur;
+	int		count;
+
+	cur = head;
+	count = 0;
+	while (cur)
+	{
+		if (cur->name)
+			count++;
+		cur = cur->next;
+	}
+	return (count);
+}

@@ -52,8 +52,8 @@ void	ft_env(t_dat *data)
 
 void	ft_append_env_var(t_dat *data, char *key, char *value)
 {
-	t_va *new;
-	t_va *cur;
+	t_va	*new;
+	t_va	*cur;
 
 	new = malloc(sizeof(t_va));
 	if (!new)
@@ -70,4 +70,39 @@ void	ft_append_env_var(t_dat *data, char *key, char *value)
 	while (cur->next)
 		cur = cur->next;
 	cur->next = new;
+}
+
+void	ft_print_sorted_env(t_va *head)
+{
+	t_va	*sorted;
+
+	sorted = ft_duplicate_list(head);
+	ft_sort_list_by_name(&sorted);
+	ft_print_export(sorted);
+	ft_free_list(sorted);
+}
+
+void	ft_list_to_env_array(t_dat *data)
+{
+	int		i;
+	int		count;
+	t_va	*cur;
+
+	i = 0;
+	data->tmp1 = NULL;
+	count = ft_count_list(data->ev);
+	data->evs = malloc((count + 1) * sizeof(char *));
+	if (!data->evs)
+		return ;
+	cur = data->ev;
+	while (cur && i < count)
+	{
+		data->tmp1 = ft_strjoin(cur->name, "=");
+		data->evs[i] = ft_strjoin(data->tmp1, cur->value);
+		free(data->tmp1);
+		data->tmp1 = NULL;
+		cur = cur->next;
+		i++;
+	}
+	data->evs[i] = NULL;
 }

@@ -63,7 +63,7 @@ char	*ft_expand_token(char *token, t_dat *data, int qt, size_t i)
 
 char	**ft_expand_tokens(t_dat *d, char **tokens, int *qtypes, int i)
 {
-	char **expanded;
+	char	**expanded;
 
 	while (tokens[i])
 		i++;
@@ -85,4 +85,29 @@ char	**ft_expand_tokens(t_dat *d, char **tokens, int *qtypes, int i)
 	}
 	expanded[i] = NULL;
 	return (expanded);
+}
+
+void	ft_check_var_assign_and_expand_line(t_dat *data, char *line)
+{
+	int *quote_types;
+
+	if (!data || !line)
+		return ;
+	data->ln = ft_tokenize_line(data, line, &quote_types);
+	if (!data->ln)
+		return ;
+	data->xln = ft_expand_tokens(data, data->ln, quote_types, 0);
+	if (!data->xln)
+	{
+		free(quote_types);
+		return ;
+	}
+	ft_strip_quotes_from_xln(data);
+	if (ft_all_valid_lvar(data, data->xln))
+		ft_update_local_variables(data);
+	else if (data->k)
+		ft_handle_builtin(data, line, data->k);
+	else
+		ft_handle_builtin(data, line, 0);
+	free(quote_types);
 }
