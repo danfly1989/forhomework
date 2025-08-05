@@ -95,13 +95,6 @@ void	ft_cleanup_data(t_dat *data)
 		free(data->tmp2);
 }
 
-void	ft_cleanup_exit(t_dat *data, int flag)
-{
-	ft_cleanup_data(data);
-	rl_clear_history();
-	exit(flag);
-}
-
 t_va	*create_lst_frm_arr(char **arr, t_va *h, int i, t_va *(*f)(char *))
 {
 	t_va	*current;

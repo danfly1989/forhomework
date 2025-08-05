@@ -11,3 +11,10 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	ft_cleanup_exit(t_dat *data, int flag)
+{
+	ft_cleanup_data(data);
+	rl_clear_history();
+	exit(flag);
+}
