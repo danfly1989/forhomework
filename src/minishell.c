@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "minishell.h"
+#include "minishell.h"
 
 int	main(int argc, char *argv[], char *env[])
 {
@@ -26,8 +26,8 @@ int	main(int argc, char *argv[], char *env[])
 			break ;
 		if (line && *line && !ft_strisspace(line))
 			add_history(line);
-		ft_check_var_assign_and_expand_line(&data,line);
-		if(line)
+		ft_check_var_assign_and_expand_line(&data, line);
+		if (line)
 			free(line);
 		ft_free_string_array(data.ln);
 		ft_free_string_array(data.xln);
@@ -51,60 +51,6 @@ void	ft_free_string_array(char **str_array)
 		i++;
 	}
 	free(str_array);
-}
-
-int	ft_increment_shlvl(t_va *node)
-{
-	int	level;
-
-	level = ft_atoi(node->value) + 1;
-	if (level < 1)
-		level = 1;
-	free(node->value);
-	node->value = ft_itoa(level);
-	if (!node->value)
-		return (0);
-	return (1);
-}
-
-int	ft_create_shlvl(t_va **env_list)
-{
-	t_va	*new_node;
-
-	new_node = malloc(sizeof(t_va));
-	if (!new_node)
-		return (0);
-	new_node->name = ft_strdup("SHLVL");
-	new_node->value = ft_itoa(1);
-	if (!new_node->name || !new_node->value)
-	{
-		free(new_node->name);
-		free(new_node->value);
-		free(new_node);
-		return (0);
-	}
-	new_node->next = *env_list;
-	*env_list = new_node;
-	return (1);
-}
-
-void	ft_update_shlvl(t_va **env_list)
-{
-	t_va	*cur;
-
-	cur = *env_list;
-	while (cur)
-	{
-		if (ft_strcmp(cur->name, "SHLVL") == 0)
-		{
-			if (!ft_increment_shlvl(cur))
-				perror("minishell: malloc error");
-			return ;
-		}
-		cur = cur->next;
-	}
-	if (!ft_create_shlvl(env_list))
-		perror("minishell: malloc error");
 }
 
 t_dat	ft_duplicate_input_args(int argc, char **argv, char **env)
@@ -158,8 +104,8 @@ void	ft_cleanup_exit(t_dat *data, int flag)
 
 t_va	*create_lst_frm_arr(char **arr, t_va *h, int i, t_va *(*f)(char *))
 {
-    t_va	*current;
-    t_va	*new_node;
+	t_va	*current;
+	t_va	*new_node;
 
 	current = NULL;
 	while (arr[i])
@@ -186,12 +132,12 @@ t_va	*ft_create_node(char *str)
 	t_va	*node;
 
 	node = malloc(sizeof(t_va));
-    if (!node)
-        return NULL;
-    node->name = NULL;
-    node->value = ft_strdup(str);
-    node->next = NULL;
-    return (node);
+	if (!node)
+		return (NULL);
+	node->name = NULL;
+	node->value = ft_strdup(str);
+	node->next = NULL;
+	return (node);
 }
 
 t_va	*ft_create_var_node(char *str)
@@ -275,27 +221,27 @@ void	ft_free_list(t_va *head)
 		tmp = head;
 		head = head->next;
 		if (tmp->name)
-			free (tmp->name);
+			free(tmp->name);
 		if (tmp->value)
-			free (tmp->value);
-		free (tmp);
+			free(tmp->value);
+		free(tmp);
 	}
 }
 
-int ft_strisspace(char *str)
+int	ft_strisspace(char *str)
 {
 	int	i;
 
 	if (!str)
 		return (0);
-   	i = 0;
-   	while (str[i] && str[i] != '\0')
-   	{
-   		if (!ft_isspace(str[i]))
-   			return (0);
-   		i++;
-   	}
-   	return (1);
+	i = 0;
+	while (str[i] && str[i] != '\0')
+	{
+		if (!ft_isspace(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 void	ft_sigint_handler(int sig)
@@ -322,30 +268,6 @@ void	ft_set_default_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-}
-
-int	ft_skip_quote(char *str, int i)
-{
-	char	quote;
-
-	quote = str[i++];
-	while (str[i] && str[i] != quote)
-		i++;
-	if (str[i])
-		i++;
-	return (i);
-}
-
-int	ft_skip_token(char *str, int i)
-{
-	while (str[i] && str[i] != ' ')
-	{
-		if (str[i] == '\'' || str[i] == '"')
-			i = ft_skip_quote(str, i);
-		else
-			i++;
-	}
-	return (i);
 }
 
 int	ft_count_tokens(char *str)
@@ -400,64 +322,12 @@ void	ft_detect_quote_type(char *token, int *quote_type)
 	}
 }
 
-char	*ft_extract_token(char *str, t_dat *d, int *quote_type)
-{
-	int		start;
-	int		end;
-	char	*token;
-
-	start = d->i;
-	*quote_type = 0;
-	end = ft_get_token_end(str, d->i);
-	d->i = end;
-	token = ft_strndup(str + start, end - start);
-	if (!token)
-		return (NULL);
-	ft_detect_quote_type(token, quote_type);
-	return (token);
-}
-
 void	ft_reset_iterators(t_dat *data)
 {
 	data->i = 0;
 	data->j = 0;
 	data->k = 0;
 	data->tot = 0;
-}
-
-char	**ft_free_token_quote(char **tokens, int *quote_types)
-{
-    if (tokens)
-        free(tokens);
-    if (quote_types)
-        free(quote_types);
-    return (NULL);
-}
-
-char	**ft_tokenize_line(t_dat *d, char *str, int **quote_types_out)
-{
-	char	**tokens;
-	int		*quote_types;
-
-	ft_reset_iterators(d);
-	d->k = ft_count_tokens(str);
-	tokens = malloc(sizeof(char *) * (d->k + 1));
-	quote_types = malloc(sizeof(int) * (d->k + 1));
-	if (!tokens || !quote_types)
-		return (ft_free_token_quote(tokens, quote_types));
-	while (str[d->i])
-	{
-		while (str[d->i] == ' ')
-			d->i++;
-		if (!str[d->i])
-			break ;
-		tokens[d->j] = ft_extract_token(str, d, &quote_types[d->j]);
-		d->j++;
-	}
-	tokens[d->j] = NULL;
-	quote_types[d->j] = -1;
-	*quote_types_out = quote_types;
-	return (tokens);
 }
 
 char	*ft_get_var_value(t_va *list, const char *name)
@@ -581,67 +451,6 @@ char	**ft_expand_tokens(t_dat *d, char **tokens, int *qtypes, int i)
 	}
 	expanded[i] = NULL;
 	return (expanded);
-}
-
-void	ft_strip_surrounding_quotes(char *s)
-{
-	size_t	len;
-	size_t	j;
-
-	len = ft_strlen(s);
-	if (len >= 2 && ((s[0] == '"' && s[len - 1] != '"')
-			|| (s[0] == '\'' && s[len - 1] != '\'')))
-		return ;
-	if (len >= 2 && ((s[0] == '"' && s[len - 1] == '"')
-			|| (s[0] == '\'' && s[len - 1] == '\'')))
-	{
-		j = 1;
-		while (j < len - 1)
-		{
-			s[j - 1] = s[j];
-			j++;
-		}
-		s[j - 1] = '\0';
-	}
-}
-
-void	ft_strip_quotes_after_equal(char *s)
-{
-	char	*eq;
-	char	quote;
-	size_t	j;
-	size_t	len;
-
-	eq = ft_strchr(s, '=');
-	len = ft_strlen(s);
-	if (eq && ((eq[1] == '"'  && s[len - 1] != '"') || (eq[1] == '\'' 
-		&& s[len - 1] != '\'')))
-		return ;
-	if (eq && ((eq[1] == '"'  && s[len - 1] == '"') || (eq[1] == '\'' 
-		&& s[len - 1] == '\'')))
-	{
-		quote = eq[1];
-		j = 0;
-		while (eq[2 + j] && eq[2 + j] != quote)
-		{
-			eq[1 + j] = eq[2 + j];
-			j++;
-		}
-		eq[1 + j] = '\0';
-	}
-}
-
-void	ft_strip_quotes_from_xln(t_dat *d)
-{
-	size_t	i;
-
-	i = 0;
-	while (d->xln[i])
-	{
-		ft_strip_surrounding_quotes(d->xln[i]);
-		ft_strip_quotes_after_equal(d->xln[i]);
-		i++;
-	}
 }
 
 int	ft_valid_var(char *str)
@@ -926,7 +735,7 @@ void	ft_exit(t_dat *data, size_t k)
 {
 	int	status;
 
-	if (data->xln[k+1] && data->xln[k+2])
+	if (data->xln[k + 1] && data->xln[k + 2])
 	{
 		write(2, "minishell: exit: too many arguments\n", 36);
 		return ;
@@ -1078,7 +887,8 @@ void	ft_export_type1(t_va **head, char *s, char *name, char *val)
 	cur = *head;
 	while (cur)
 	{
-		if (ft_strcmp(cur->name, name) == 0){
+		if (ft_strcmp(cur->name, name) == 0)
+		{
 			free(cur->value);
 			cur->value = ft_strdup(val);
 			free(name);
@@ -1291,12 +1101,11 @@ void	ft_handle_builtin(t_dat *data, char *line, size_t k)
 		ft_export_multi_var(data, k);
 	else
 		ft_external_functions(data, line);
-		
 }
 
 void	ft_check_var_assign_and_expand_line(t_dat *data, char *line)
 {
-	int		*quote_types;
+	int	*quote_types;
 
 	if (!data || !line)
 		return ;
@@ -1352,7 +1161,7 @@ void	ft_list_to_env_array(t_dat *data)
 	{
 		data->tmp1 = ft_strjoin(cur->name, "=");
 		data->evs[i] = ft_strjoin(data->tmp1, cur->value);
-		free (data->tmp1);
+		free(data->tmp1);
 		data->tmp1 = NULL;
 		cur = cur->next;
 		i++;
@@ -1367,7 +1176,7 @@ char	*ft_join_path(char *str1, char *cmd)
 
 	temp = ft_strjoin(str1, "/");
 	full_path = ft_strjoin(temp, cmd);
-	free (temp);
+	free(temp);
 	temp = NULL;
 	return (full_path);
 }
@@ -1401,7 +1210,7 @@ char	*ft_get_cmd_path(t_dat *d, const char *cmd, int i)
 
 int	ft_count_pipes(char **tokens)
 {
-	int count;
+	int	count;
 	int	i;
 
 	count = 0;
@@ -1411,8 +1220,8 @@ int	ft_count_pipes(char **tokens)
 		if (ft_strcmp(tokens[i], "|") == 0)
 			count++;
 		i++;
-    }
-    return (count);
+	}
+	return (count);
 }
 
 void	ft_cmd_not_found(char *cmd)
@@ -1435,7 +1244,7 @@ void	ft_ex_single_cmd(t_dat *d, char *cmd_path)
 
 	ft_parse_redirection(d->xln, &r);
 	if (!ft_apply_sing_redirections(&r, d->xln))
-		exit (1);
+		exit(1);
 	pid = fork();
 	if (pid == 0)
 	{
@@ -1491,7 +1300,7 @@ char	**ft_extract_tokens(t_dat *data, int start, int end)
 		tokens[i] = ft_strdup(data->xln[start]);
 		if (!tokens[i])
 		{
-			ft_free_string_array(tokens);		
+			ft_free_string_array(tokens);
 			return (NULL);
 		}
 		start++;
@@ -1687,7 +1496,7 @@ int	ft_syntax_error_msg(char *token)
 
 int	ft_validate_segment(char **tokens, int start, int end)
 {
-	int i;
+	int	i;
 
 	if (!tokens || start >= end)
 		return (0);
@@ -1754,14 +1563,14 @@ void	ft_wait_children(int tot)
 
 void	ft_execute_pipeline(t_dat *d, char ***cmd)
 {
-	int		**fd;
+	int	**fd;
 
 	fd = init_fd_array(d->tot);
 	if (!fd || !ft_create_pipes(fd, d->tot))
 	{
 		if (fd)
 			ft_free_fd(fd);
-		return;
+		return ;
 	}
 	ft_fork_children(d, cmd, fd);
 	ft_close_pipes(fd, d->tot);
@@ -1842,10 +1651,10 @@ int	ft_handle_heredoc(char *delim, char *line)
 	{
 		write(1, "> ", 2);
 		if (getline(&line, &len, stdin) == -1)
-			break;
+			break ;
 		if (ft_strncmp(line, delim, strlen(delim)) == 0
 			&& line[strlen(delim)] == '\n')
-			break;
+			break ;
 		write(pipefd[1], line, strlen(line));
 	}
 	free(line);
@@ -1937,8 +1746,8 @@ int	ft_remove_sing_redirections(char **t, int i, int j)
 
 int	ft_is_redirection(char *str)
 {
-	return (!ft_strcmp(str, "<") || !ft_strcmp(str, ">") ||
-			!ft_strcmp(str, ">>") || !ft_strcmp(str, "<<"));
+	return (!ft_strcmp(str, "<") || !ft_strcmp(str, ">") || !ft_strcmp(str,
+			">>") || !ft_strcmp(str, "<<"));
 }
 
 void	ft_free_redirection(t_rdr *r)
@@ -1985,8 +1794,7 @@ int	ft_syntax_error(char *token)
 
 int	ft_check_redir(char **tokens, int i)
 {
-	if (!tokens[i + 1]
-		|| ft_is_redirection(tokens[i + 1])
+	if (!tokens[i + 1] || ft_is_redirection(tokens[i + 1])
 		|| !ft_strcmp(tokens[i + 1], "|"))
 		return (ft_syntax_error(tokens[i + 1]));
 	return (1);

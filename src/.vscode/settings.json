@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "pushswap.h": "c"
+        "pushswap.h": "c",
+        "errno.h": "c"
     }
 }
