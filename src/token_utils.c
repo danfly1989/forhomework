@@ -40,3 +40,27 @@ int	ft_get_token_end(char *str, int i)
 		return (ft_skip_quote(str, i));
 	return (ft_skip_token(str, i));
 }
+
+char	**ft_extract_tokens(t_dat *data, int start, int end)
+{
+	char **tokens;
+	int i;
+
+	tokens = malloc((end - start + 1) * sizeof(char *));
+	if (!tokens)
+		return (NULL);
+	i = 0;
+	while (start < end)
+	{
+		tokens[i] = ft_strdup(data->xln[start]);
+		if (!tokens[i])
+		{
+			ft_free_string_array(tokens);
+			return (NULL);
+		}
+		start++;
+		i++;
+	}
+	tokens[i] = NULL;
+	return (tokens);
+}

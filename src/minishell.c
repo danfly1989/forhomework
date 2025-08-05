@@ -104,33 +104,6 @@ char	*ft_join_path(char *str1, char *cmd)
 	return (full_path);
 }
 
-char	*ft_get_cmd_path(t_dat *d, const char *cmd, int i)
-{
-	char	*full_path;
-
-	if (!cmd || cmd[0] == '\0')
-		return (NULL);
-	d->tmp1 = ft_get_val_from_list(d->ev, "PATH");
-	if (!d->tmp1)
-		return (NULL);
-	if (access(cmd, X_OK) == 0)
-		return (ft_strdup(cmd));
-	d->avs = ft_split(d->tmp1, ':');
-	while (d->avs && d->avs[i])
-	{
-		full_path = ft_join_path(d->avs[i], (char *)cmd);
-		if (access(full_path, X_OK) == 0)
-		{
-			ft_free_string_array(d->avs);
-			return (full_path);
-		}
-		free(full_path);
-		i++;
-	}
-	ft_free_string_array(d->avs);
-	return (NULL);
-}
-
 int	ft_count_pipes(char **tokens)
 {
 	int	count;
@@ -207,30 +180,6 @@ void	ft_external_functions(t_dat *data, char *line)
 	else
 		ft_ex_single_cmd(data, NULL);
 	ft_free_string_array(data->evs);
-}
-
-char	**ft_extract_tokens(t_dat *data, int start, int end)
-{
-	char	**tokens;
-	int		i;
-
-	tokens = malloc((end - start + 1) * sizeof(char *));
-	if (!tokens)
-		return (NULL);
-	i = 0;
-	while (start < end)
-	{
-		tokens[i] = ft_strdup(data->xln[start]);
-		if (!tokens[i])
-		{
-			ft_free_string_array(tokens);
-			return (NULL);
-		}
-		start++;
-		i++;
-	}
-	tokens[i] = NULL;
-	return (tokens);
 }
 
 char	***ft_clean_cmd(char ***cmd)
@@ -331,49 +280,12 @@ int	**init_fd_array(int tot)
 	return (fd);
 }
 
-int	ft_create_pipes(int **fd, int tot)
-{
-	int	i;
-
-	i = 0;
-	while (i < tot - 1)
-	{
-		if (pipe(fd[i]) == -1)
-		{
-			perror("pipe");
-			while (i-- > 0)
-				free(fd[i]);
-			free(fd);
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}
-
 void	ft_setup_io(int **fd, size_t i, size_t total)
 {
 	if (i > 0)
 		dup2(fd[i - 1][0], STDIN_FILENO);
 	if (i < total - 1)
 		dup2(fd[i][1], STDOUT_FILENO);
-}
-
-void	ft_exec_command(t_dat *d, char **cmd)
-{
-	char	*cmd_path;
-
-	cmd_path = ft_get_cmd_path(d, cmd[0], 0);
-	if (!cmd_path)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd[0], 2);
-		ft_putendl_fd(": command not found", 2);
-		exit(127);
-	}
-	execve(cmd_path, cmd, d->evs);
-	perror("execve");
-	exit(1);
 }
 
 void	ft_child_process(t_dat *d, char ***cmd, int **fd, size_t i)
@@ -484,83 +396,6 @@ void	ft_wait_children(int tot)
 	}
 }
 
-void	ft_execute_pipeline(t_dat *d, char ***cmd)
-{
-	int	**fd;
-
-	fd = init_fd_array(d->tot);
-	if (!fd || !ft_create_pipes(fd, d->tot))
-	{
-		if (fd)
-			ft_free_fd(fd);
-		return ;
-	}
-	ft_fork_children(d, cmd, fd);
-	ft_close_pipes(fd, d->tot);
-	ft_wait_children(d->tot);
-	ft_free_fd(fd);
-}
-
-int	ft_parse_redirection(char **tokens, t_rdr *r)
-{
-	int	i;
-
-	i = 0;
-	ft_memset(r, 0, sizeof(*r));
-	while (tokens[i])
-	{
-		if (!ft_strcmp(tokens[i], "<") && tokens[i + 1])
-			r->in_file = ft_strdup(tokens[++i]);
-		else if (!ft_strcmp(tokens[i], ">") && tokens[i + 1])
-			r->out_file = ft_strdup(tokens[++i]);
-		else if (!ft_strcmp(tokens[i], ">>") && tokens[i + 1])
-			r->append_file = ft_strdup(tokens[++i]);
-		else if (!ft_strcmp(tokens[i], "<<") && tokens[i + 1])
-			r->heredoc_delim = ft_strdup(tokens[++i]);
-		i++;
-	}
-	return (1);
-}
-
-int	ft_redir_in(char *file)
-{
-	int	fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-		return (perror(file), 0);
-	if (dup2(fd, STDIN_FILENO) < 0)
-		return (perror("dup2 in"), 0);
-	close(fd);
-	return (1);
-}
-
-int	ft_redir_out(char *file)
-{
-	int	fd;
-
-	fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd < 0)
-		return (perror(file), 0);
-	if (dup2(fd, STDOUT_FILENO) < 0)
-		return (perror("dup2 out"), 0);
-	close(fd);
-	return (1);
-}
-
-int	ft_redir_append(char *file)
-{
-	int	fd;
-
-	fd = open(file, O_CREAT | O_WRONLY | O_APPEND, 0644);
-	if (fd < 0)
-		return (perror(file), 0);
-	if (dup2(fd, STDOUT_FILENO) < 0)
-		return (perror("dup2 append"), 0);
-	close(fd);
-	return (1);
-}
-
 int	ft_handle_heredoc(char *delim, char *line)
 {
 	size_t	len;
@@ -587,116 +422,6 @@ int	ft_handle_heredoc(char *delim, char *line)
 	return (1);
 }
 
-int	ft_apply_sing_redirections(t_rdr *r, char **tok)
-{
-	if (r->in_file && !ft_redir_in(r->in_file))
-		return (perror("minishell"), 0);
-	if (r->out_file && !ft_redir_out(r->out_file))
-		return (perror("minishell"), 0);
-	if (r->append_file && !ft_redir_append(r->append_file))
-		return (perror("minishell"), 0);
-	if (r->heredoc_delim && !ft_handle_heredoc(r->heredoc_delim, NULL))
-		return (perror("minishell"), 0);
-	ft_free_redirection(r);
-	return (ft_remove_sing_redirections(tok, 0, 0));
-}
-
-int	ft_apply_redirections(t_rdr *r, char ***cmd)
-{
-	if (r->in_file && !ft_redir_in(r->in_file))
-		return (0);
-	if (r->out_file && !ft_redir_out(r->out_file))
-		return (0);
-	if (r->append_file && !ft_redir_append(r->append_file))
-		return (0);
-	if (r->heredoc_delim && !ft_handle_heredoc(r->heredoc_delim, NULL))
-		return (0);
-	ft_free_redirection(r);
-	return (ft_remove_redirections(cmd, 0, 0));
-}
-
-int	ft_remove_redirections(char ***tokens_ptr, int i, int j)
-{
-	char	**tokens;
-
-	if (!tokens_ptr || !*tokens_ptr)
-		return (0);
-	tokens = *tokens_ptr;
-	while (tokens[i])
-	{
-		if (ft_is_redirection(tokens[i]) && tokens[i + 1])
-		{
-			free(tokens[i]);
-			free(tokens[i + 1]);
-			j = i - 1;
-			while (tokens[++j + 2])
-				tokens[j] = tokens[j + 2];
-			tokens[j] = NULL;
-			tokens[j + 1] = NULL;
-			continue ;
-		}
-		i++;
-	}
-	*tokens_ptr = tokens;
-	return (1);
-}
-
-int	ft_remove_sing_redirections(char **t, int i, int j)
-{
-	if (!t)
-		return (0);
-	i = 0;
-	while (t[i])
-	{
-		if (ft_is_redirection(t[i]) && t[i + 1])
-		{
-			free(t[i]);
-			free(t[i + 1]);
-			j = i;
-			while (t[j + 2])
-			{
-				t[j] = t[j + 2];
-				j++;
-			}
-			t[j] = NULL;
-			t[j + 1] = NULL;
-			continue ;
-		}
-		i++;
-	}
-	return (1);
-}
-
-int	ft_is_redirection(char *str)
-{
-	return (!ft_strcmp(str, "<") || !ft_strcmp(str, ">") || !ft_strcmp(str,
-			">>") || !ft_strcmp(str, "<<"));
-}
-
-void	ft_free_redirection(t_rdr *r)
-{
-	if (r->in_file)
-	{
-		free(r->in_file);
-		r->in_file = NULL;
-	}
-	if (r->out_file)
-	{
-		free(r->out_file);
-		r->out_file = NULL;
-	}
-	if (r->append_file)
-	{
-		free(r->append_file);
-		r->append_file = NULL;
-	}
-	if (r->heredoc_delim)
-	{
-		free(r->heredoc_delim);
-		r->heredoc_delim = NULL;
-	}
-}
-
 int	ft_syntax_error(char *token)
 {
 	char	*mes1;
@@ -719,13 +444,6 @@ int	ft_check_redir(char **tokens, int i)
 {
 	if (!tokens[i + 1] || ft_is_redirection(tokens[i + 1])
 		|| !ft_strcmp(tokens[i + 1], "|"))
-		return (ft_syntax_error(tokens[i + 1]));
-	return (1);
-}
-
-int	ft_check_pipe(char **tokens, int i)
-{
-	if (i == 0 || !tokens[i + 1] || ft_is_redirection(tokens[i + 1]))
 		return (ft_syntax_error(tokens[i + 1]));
 	return (1);
 }
