@@ -53,48 +53,6 @@ void	ft_free_string_array(char **str_array)
 	free(str_array);
 }
 
-t_dat	ft_duplicate_input_args(int argc, char **argv, char **env)
-{
-	t_dat	data;
-
-	(void)argc;
-	data.av = NULL;
-	data.ev = NULL;
-	data.lo = NULL;
-	data.ln = NULL;
-	data.xln = NULL;
-	data.tmp1 = NULL;
-	data.tmp2 = NULL;
-	data.i = 0;
-	data.j = 0;
-	data.k = 0;
-	data.tot = 0;
-	data.avs = NULL;
-	data.evs = NULL;
-	data.av = create_lst_frm_arr(argv + 1, NULL, 0, ft_create_node);
-	data.ev = create_lst_frm_arr(env, NULL, 0, ft_create_var_node);
-	ft_update_shlvl(&data.ev);
-	return (data);
-}
-
-void	ft_cleanup_data(t_dat *data)
-{
-	if (data->ev != NULL)
-		ft_free_list(data->ev);
-	if (data->av != NULL)
-		ft_free_list(data->av);
-	if (data->lo != NULL)
-		ft_free_list(data->lo);
-	if (data->ln != NULL)
-		ft_free_string_array(data->ln);
-	if (data->xln != NULL)
-		ft_free_string_array(data->xln);
-	if (data->tmp1 != NULL)
-		free(data->tmp1);
-	if (data->tmp2 != NULL)
-		free(data->tmp2);
-}
-
 t_va	*create_lst_frm_arr(char **arr, t_va *h, int i, t_va *(*f)(char *))
 {
 	t_va	*current;
@@ -131,78 +89,6 @@ t_va	*ft_create_node(char *str)
 	node->value = ft_strdup(str);
 	node->next = NULL;
 	return (node);
-}
-
-t_va	*ft_create_var_node(char *str)
-{
-	t_va	*node;
-	char	*equal_pos;
-
-	if (!str)
-		return (NULL);
-	equal_pos = ft_strchr(str, '=');
-	if (!equal_pos)
-		return (NULL);
-	node = malloc(sizeof(t_va));
-	if (!node)
-		return (NULL);
-	node->name = ft_extract_var_name(str);
-	node->value = ft_extract_var_value(equal_pos + 1, 0, 0);
-	node->next = NULL;
-	if (!node->name || !node->value)
-	{
-		free(node->name);
-		free(node->value);
-		free(node);
-		return (NULL);
-	}
-	return (node);
-}
-
-char	*ft_extract_var_name(char *str)
-{
-	char	*name;
-	size_t	i;
-	size_t	len;
-
-	len = 0;
-	while (str[len] && str[len] != '=')
-		len++;
-	name = malloc(len + 1);
-	if (!name)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		name[i] = str[i];
-		i++;
-	}
-	name[i] = '\0';
-	return (name);
-}
-
-char	*ft_extract_var_value(char *str, char quote, size_t len)
-{
-	char	*val;
-	size_t	i;
-
-	if (!str || str[0] == '\0')
-		return (NULL);
-	if (str[0] == '"' || str[0] == '\'')
-	{
-		quote = str[0];
-		str++;
-	}
-	while (str[len] && str[len] != quote)
-		len++;
-	val = malloc(len + 1);
-	if (!val)
-		return (NULL);
-	i = -1;
-	while (++i < len)
-		val[i] = str[i];
-	val[len] = '\0';
-	return (val);
 }
 
 void	ft_free_list(t_va *head)
@@ -1823,11 +1709,3 @@ int	ft_validate_syntax(char **tokens)
 	}
 	return (1);
 }
-
-/*
-run with the following command
-cc -Wall -Werror -Wextra -o minishell minishell1307.c ./libft/libft.a -lreadline
-HA="their $HOME" hu="their $home" GO=slow BALL='balance them $HOME'
-HAD="their $HOME" hug="their $home" GO=slower BALL='balance "as" them $HOME'
-
-*/
