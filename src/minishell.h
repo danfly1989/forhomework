@@ -196,9 +196,4 @@ int							ft_check_redir(char **tokens, int i);
 int							ft_check_pipe(char **tokens, int i);
 int							ft_validate_syntax(char **tokens);
 
-// restructure
-int							ft_increment_shlvl(t_va *node);
-int							ft_create_shlvl(t_va **env_list);
-void						ft_update_shlvl(t_va **env_list);
-
 #endif

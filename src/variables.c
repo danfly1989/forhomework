@@ -82,3 +82,34 @@ char	*ft_extract_var_value(char *str, char quote, size_t len)
 	val[len] = '\0';
 	return (val);
 }
+
+char	*ft_get_var_value(t_va *list, const char *name)
+{
+	size_t	n;
+
+	n = ft_strlen(name);
+	while (list)
+	{
+		if (list->name && ft_strncmp(list->name, name, n) == 0)
+			return (list->value);
+		list = list->next;
+	}
+	return (NULL);
+}
+
+char	*ft_extract_var_key(const char *str, size_t *i)
+{
+	size_t	start;
+	char	*key;
+
+	start = *i;
+	if (str[*i] == '?')
+	{
+		(*i)++;
+		return (ft_strdup("?"));
+	}
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+		(*i)++;
+	key = ft_substr(str, start, *i - start);
+	return (key);
+}

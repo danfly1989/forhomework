@@ -72,3 +72,26 @@ void	ft_strip_quotes_from_xln(t_dat *d)
 		i++;
 	}
 }
+
+void	ft_detect_quote_type(char *token, int *quote_type)
+{
+	char *eq;
+	char quote;
+
+	if (token[0] == '\'')
+		*quote_type = 1;
+	else if (token[0] == '"')
+		*quote_type = 2;
+	else
+	{
+		eq = ft_strchr(token, '=');
+		if (eq && (*(eq + 1) == '\'' || *(eq + 1) == '"'))
+		{
+			quote = *(eq + 1);
+			if (quote == '\'')
+				*quote_type = 1;
+			else
+				*quote_type = 2;
+		}
+	}
+}
