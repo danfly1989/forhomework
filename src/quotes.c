@@ -6,7 +6,7 @@
 /*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:18:19 by daflynn           #+#    #+#             */
-/*   Updated: 2025/08/05 17:18:35 by daflynn          ###   ########.fr       */
+/*   Updated: 2025/08/07 16:48:07 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ void	ft_strip_quotes_after_equal(char *s)
 	eq = ft_strchr(s, '=');
 	len = ft_strlen(s);
 	if (eq && ((eq[1] == '"' && s[len - 1] != '"') || (eq[1] == '\'' && s[len
-				- 1] != '\'')))
+					- 1] != '\'')))
 		return ;
 	if (eq && ((eq[1] == '"' && s[len - 1] == '"') || (eq[1] == '\'' && s[len
-				- 1] == '\'')))
+					- 1] == '\'')))
 	{
 		quote = eq[1];
 		j = 0;
