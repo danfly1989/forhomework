@@ -6,7 +6,7 @@
 /*   By: dagwu <dagwu@student.42berlin.de>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/14 18:48:53 by dagwu             #+#    #+#             */
-/*   Updated: 2025/08/02 17:00:14 by daflynn          ###   ########.fr       */
+/*   Updated: 2025/08/07 09:27:22 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,19 @@
 
 typedef struct s_dat
 {
-	struct s_variable_node *av; // argv
-	struct s_variable_node *ev; // env
-	struct s_variable_node *lo; // local variable
-	char **ln;                  // splitted line
-	char **xln;                 // expanded splitted line
-	char *tmp1;                 // temorary storage 1
-	char *tmp2;                 // temorary storage 2
-	size_t i;                   // iterator
-	size_t j;                   // iterator
-	size_t k;                   // iterator
-	size_t tot;                 // iterator
-	char **avs;                 // args for external function executions
-	char **evs;                 // envs for external function executions
+	struct s_variable_node	*av;
+	struct s_variable_node	*ev;
+	struct s_variable_node	*lo;
+	char					**ln;
+	char					**xln;
+	char					*tmp1;
+	char					*tmp2;
+	size_t					i;
+	size_t					j;
+	size_t					k;
+	size_t					tot;
+	char					**avs;
+	char					**evs;
 }							t_dat;
 
 typedef struct s_variable_node

@@ -89,7 +89,7 @@ char	**ft_expand_tokens(t_dat *d, char **tokens, int *qtypes, int i)
 
 void	ft_check_var_assign_and_expand_line(t_dat *data, char *line)
 {
-	int *quote_types;
+	int	*quote_types;
 
 	if (!data || !line)
 		return ;

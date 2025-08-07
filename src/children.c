@@ -53,7 +53,7 @@ void	ft_fork_children(t_dat *d, char ***cmd, int **fd)
 
 void	ft_wait_children(int tot)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < tot)

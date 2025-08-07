@@ -97,8 +97,8 @@ int	ft_parse_cmd_helper(t_dat *d, char ***cmd, int *idx, int *st_i)
 
 char	***ft_parse_cmd(t_dat *d, int st, int i, int idx)
 {
-	char ***cmd;
-	int st_i[2];
+	char	***cmd;
+	int		st_i[2];
 
 	d->k = ft_count_pipes(d->xln) + 1;
 	cmd = malloc((d->k + 1) * sizeof(char **));

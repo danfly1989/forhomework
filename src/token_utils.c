@@ -43,8 +43,8 @@ int	ft_get_token_end(char *str, int i)
 
 char	**ft_extract_tokens(t_dat *data, int start, int end)
 {
-	char **tokens;
-	int i;
+	char	**tokens;
+	int		i;
 
 	tokens = malloc((end - start + 1) * sizeof(char *));
 	if (!tokens)

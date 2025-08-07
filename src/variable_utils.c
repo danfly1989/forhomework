@@ -72,7 +72,7 @@ int	ft_update_existing_var(t_va *node, const char *name, const char *val)
 
 int	ft_var_name_only(char *str)
 {
-	size_t i;
+	size_t	i;
 
 	if (!str)
 		return (0);

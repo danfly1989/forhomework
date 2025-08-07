@@ -85,15 +85,6 @@ void	ft_print_export(t_va *head)
 	}
 }
 
-void	ft_export_error(char *arg, char *message)
-{
-	write(2, "export: '", 9);
-	write(2, arg, ft_strlen(arg));
-	write(2, "': ", 3);
-	write(2, message, ft_strlen(message));
-	write(2, "\n", 1);
-}
-
 void	ft_export_multi_var(t_dat *data, size_t k)
 {
 	char	*message;

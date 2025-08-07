@@ -75,8 +75,8 @@ void	ft_strip_quotes_from_xln(t_dat *d)
 
 void	ft_detect_quote_type(char *token, int *quote_type)
 {
-	char *eq;
-	char quote;
+	char	*eq;
+	char	quote;
 
 	if (token[0] == '\'')
 		*quote_type = 1;

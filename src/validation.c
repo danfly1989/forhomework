@@ -86,7 +86,7 @@ int	ft_syntax_error_msg(char *token)
 
 int	ft_validate_segment(char **tokens, int start, int end)
 {
-	int i;
+	int	i;
 
 	if (!tokens || start >= end)
 		return (0);

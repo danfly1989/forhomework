@@ -12,13 +12,6 @@
 
 #include "minishell.h"
 
-void	ft_cleanup_exit(t_dat *data, int flag)
-{
-	ft_cleanup_data(data);
-	rl_clear_history();
-	exit(flag);
-}
-
 t_dat	ft_duplicate_input_args(int argc, char **argv, char **env)
 {
 	t_dat	data;
@@ -87,4 +80,27 @@ void	ft_exit_numeric_error(char *arg)
 	write(2, "minishell: exit: ", 18);
 	write(2, arg, ft_strlen(arg));
 	write(2, ": numeric argument required\n", 29);
+}
+
+void	ft_handle_builtin(t_dat *data, char *line, size_t k)
+{
+	(void)line;
+	if (data == NULL || data->xln == NULL)
+		return ;
+	if (ft_strcmp(data->xln[k], "pwd") == 0)
+		ft_pwd();
+	else if (ft_strcmp(data->xln[k], "cd") == 0)
+		ft_change_directory(data, k);
+	else if (ft_strcmp(data->xln[k], "echo") == 0)
+		ft_echo(data, k);
+	else if (ft_strcmp(data->xln[k], "exit") == 0)
+		ft_exit(data, k);
+	else if (ft_strcmp(data->xln[k], "env") == 0)
+		ft_env(data);
+	else if (ft_strcmp(data->xln[k], "unset") == 0)
+		ft_unset_multi_var(data, k);
+	else if (ft_strcmp(data->xln[k], "export") == 0)
+		ft_export_multi_var(data, k);
+	else
+		ft_external_functions(data, line);
 }
