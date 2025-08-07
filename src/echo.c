@@ -34,3 +34,15 @@ void	ft_echo(t_dat *d, size_t k)
 	if (newline)
 		printf("\n");
 }
+
+void	ft_env(t_dat *data)
+{
+	t_va	*cur;
+
+	cur = data->ev;
+	while (cur != NULL)
+	{
+		printf("%s=%s\n", cur->name, cur->value);
+		cur = cur->next;
+	}
+}

@@ -27,6 +27,7 @@ int	ft_strisspace(char *str)
 	}
 	return (1);
 }
+
 void	ft_reset_iterators(t_dat *data)
 {
 	data->i = 0;

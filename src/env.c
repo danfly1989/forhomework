@@ -38,18 +38,6 @@ void	ft_update_env_variable(t_dat *d, const char *name, const char *value)
 		ft_create_env_variable(d, name, value);
 }
 
-void	ft_env(t_dat *data)
-{
-	t_va	*cur;
-
-	cur = data->ev;
-	while (cur != NULL)
-	{
-		printf("%s=%s\n", cur->name, cur->value);
-		cur = cur->next;
-	}
-}
-
 void	ft_append_env_var(t_dat *data, char *key, char *value)
 {
 	t_va	*new;

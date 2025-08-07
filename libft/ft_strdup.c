@@ -29,28 +29,3 @@ char	*ft_strdup(const char *s)
 	ptr[i] = '\0';
 	return (ptr);
 }
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	*input = "Hello world";
-	char	*output = ft_strdup(input);
-
-	if (output == NULL)
-	{
-		printf("Returned Null");
-		return (1);
-	}
-
-	if(input == output)
-	{
-		printf("No true duplicate (same address)");
-		return (2);
-	}
-
-	printf("OK!");
-	//User must free memory for strdup
-	free(output);
-	return (0);
-}*/

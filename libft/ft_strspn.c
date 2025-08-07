@@ -10,28 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"  // Ensure your libft.h declares ft_strspn
+#include "libft.h"
 
-size_t  ft_strspn(const char *str, const char *charset)
+size_t	ft_strspn(const char *str, const char *charset)
 {
-    size_t  len;
-    int     found;
+	size_t	len;
+	int		found;
+	size_t	i;
 
-    len = 0;
-    while (str[len])
-    {
-        found = 0;
-        for (size_t i = 0; charset[i]; i++)
-        {
-            if (str[len] == charset[i])
-            {
-                found = 1;
-                break;
-            }
-        }
-        if (!found)
-            break;
-        len++;
-    }
-    return (len);
+	len = 0;
+	while (str[len])
+	{
+		found = 0;
+		i = 0;
+		while (charset[i])
+		{
+			if (str[len] == charset[i])
+			{
+				found = 1;
+				break ;
+			}
+			i++;
+		}
+		if (!found)
+			break ;
+		len++;
+	}
+	return (len);
 }
